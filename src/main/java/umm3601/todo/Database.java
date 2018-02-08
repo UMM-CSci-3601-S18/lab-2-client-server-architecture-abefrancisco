@@ -34,8 +34,8 @@ public class Database {
    * @return the user with the given ID, or null if there is no user
    * with that ID
    */
-  public User getTodo(String id) {
-    return Arrays.stream(umm3601.todo.allTodos).filter(x -> x._id.equals(id)).findFirst().orElse(null);
+  public Todo getTodo(String id) {
+    return Arrays.stream(allTodos).filter(x -> x._id.equals(id)).findFirst().orElse(null);
   }
 
   /**
@@ -44,18 +44,18 @@ public class Database {
    * @param queryParams map of required key-value pairs for the query
    * @return an array of all the users matching the given criteria
    */
-  public User[] listUsers(Map<String, String[]> queryParams) {
-    User[] filteredUsers = umm3601.todo.allTodos;
+  public Todo[] listTodos(Map<String, String[]> queryParams) {
+    Todo[] filteredTodos = allTodos;
       String message = "User with ID " + id + " wasn't found.";
 
     // Filter age if defined
     if(queryParams.containsKey("age")) {
       int targetAge = Integer.parseInt(queryParams.get("age")[0]);
-      filteredUsers = filterUsersByAge(filteredtodos, targetAge);
+      filteredTodos = filterTodosByAge(filteredTodos, targetAge);
     }
     // Process other query parameters here...
 
-    return filteredUsers;
+    return filteredTodos;
   }
 
   /**
