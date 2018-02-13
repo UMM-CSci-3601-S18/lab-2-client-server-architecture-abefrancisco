@@ -58,8 +58,8 @@ public class TodoController {
    */
   public JsonObject getTodos(Request req, Response res) {
     res.type("application/json");
-    Todo[] users = database.listTodos(req.queryMap().toMap());
-    return buildSuccessJsonResponse("users", gson.toJsonTree(users));
+    Todo[] todos = database.listTodos(req.queryMap().toMap());
+    return buildSuccessJsonResponse("users", gson.toJsonTree(todos));
   }
 
 }
