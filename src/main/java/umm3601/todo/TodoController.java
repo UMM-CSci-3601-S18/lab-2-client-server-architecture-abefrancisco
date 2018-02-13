@@ -4,9 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import spark.Request;
 import spark.Response;
-import umm3601.user.Database;
-import umm3601.user.User;
-
 import static umm3601.Util.buildFailJsonResponse;
 import static umm3601.Util.buildSuccessJsonResponse;
 
@@ -40,12 +37,12 @@ public class TodoController {
    * @return a success JSON object if the user with that ID is found, a fail
    * JSON object if no user with that ID is found
    */
-  public JsonObject getUser(Request req, Response res) {
+  public JsonObject getTodo(Request req, Response res) {
     res.type("application/json");
     String id = req.params("id");
-    User user = database.getUser(id);
-    if (user != null) {
-      return buildSuccessJsonResponse("todo", gson.toJsonTree(user));
+    Todo todo = database.getTodo(id);
+    if (todo != null) {
+      return buildSuccessJsonResponse("todo", gson.toJsonTree(todo));
     } else {
       String message = "User with ID " + id + " wasn't found.";
       return buildFailJsonResponse("id", message);
@@ -61,7 +58,7 @@ public class TodoController {
    */
   public JsonObject getTodos(Request req, Response res) {
     res.type("application/json");
-    User[] users = database.listUsers(req.queryMap().toMap());
+    Todo[] users = database.listTodos(req.queryMap().toMap());
     return buildSuccessJsonResponse("users", gson.toJsonTree(users));
   }
 
