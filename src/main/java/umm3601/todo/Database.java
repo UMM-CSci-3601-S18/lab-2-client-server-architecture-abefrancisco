@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ public class Database {
 
   private Todo[] allTodos;
 
-  public Database (String userDataFile) throws IOException {
+  public Database(String userDataFile) throws IOException {
     Gson gson = new Gson();
     FileReader reader = new FileReader(userDataFile);
     allTodos = gson.fromJson(reader, Todo[].class);
@@ -45,7 +46,7 @@ public class Database {
    */
   public Todo[] listTodos(Map<String, String[]> queryParams) {
     Todo[] filteredTodos = allTodos;
-      //String message = "User with ID " + id + " wasn't found.";
+    //String message = "User with ID " + id + " wasn't found.";
 
     // by category
     if (queryParams.containsKey("category")) {
@@ -57,6 +58,18 @@ public class Database {
     if (queryParams.containsKey("content")) {
       String targetContent = queryParams.get("content")[0];
       filteredTodos = filterTodosByContent(filteredTodos, targetContent);
+    }
+
+    // for limiting todos
+    if (queryParams.containsKey("limit")) {
+      int targetLimit = Integer.parseInt(queryParams.get("limit")[0]);
+      filteredTodos = limitTodos(filteredTodos, targetLimit);
+    }
+
+    // for ordering by
+    if (queryParams.containsKey("orderBy")) {
+      String targetOrder = queryParams.get("orderBy")[0];
+      filteredTodos = orderTodos(filteredTodos, targetOrder);
     }
 
     // by owner
@@ -74,7 +87,7 @@ public class Database {
     return filteredTodos;
   }
 
-  // filtery by category
+  // filter by category
   public Todo[] filterTodosByCategory(Todo[] todos, String targetCategory) {
     return Arrays.stream(todos).filter(x -> x.category.equals(targetCategory)).toArray(Todo[]::new);
   }
@@ -82,6 +95,78 @@ public class Database {
   // filter by content
   public Todo[] filterTodosByContent(Todo[] todos, String targetContent) {
     return Arrays.stream(todos).filter(x -> x.body.contains(targetContent)).toArray(Todo[]::new);
+  }
+
+  // limit
+  public Todo[] limitTodos(Todo[] todos, int targetLimit) {
+    if (targetLimit < 0) {
+      targetLimit = 0;
+    }
+
+    Todo[] limtodos = new Todo[targetLimit];
+
+    if (targetLimit < 1) {
+      return limtodos;
+    } else if (targetLimit > todos.length) {
+      return todos;
+    } else {
+      System.arraycopy(todos, 0, limtodos, 0, targetLimit);
+      return limtodos;
+    }
+  }
+
+  public Todo[] orderTodos(Todo[] todos, String order) {
+
+    switch (order) {
+      case "body":
+        Arrays.sort(todos, new bodyComparator());
+        break;
+
+      case "owner":
+        Arrays.sort(todos, new ownerComparator());
+        break;
+
+      case "status":
+        Arrays.sort(todos, new statusComparator());
+        break;
+
+      default:
+        Arrays.sort(todos, new categoryComparator());
+        break;
+    }
+    return todos;
+  }
+
+  // comparator for owner
+  public class ownerComparator implements Comparator<Todo> {
+    @Override
+    public int compare(Todo td1, Todo td2) {
+      return td1.owner.compareTo(td2.owner);
+    }
+  }
+
+  // comparator for status
+  public class statusComparator implements Comparator<Todo> {
+    @Override
+    public int compare(Todo td1, Todo td2) {
+      return Boolean.compare(td1.status, td2.status);
+    }
+  }
+
+  // comparator for body
+  public class bodyComparator implements Comparator<Todo> {
+    @Override
+    public int compare(Todo td1, Todo td2) {
+      return td1.body.compareTo(td2.body);
+    }
+  }
+
+  // comparator for category
+  public class categoryComparator implements Comparator<Todo> {
+    //@Override
+    public int compare(Todo td1, Todo td2) {
+      return td1.category.compareTo(td2.category);
+    }
   }
 
   // filter by owner
