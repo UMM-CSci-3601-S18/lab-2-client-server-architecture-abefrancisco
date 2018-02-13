@@ -1,7 +1,6 @@
 package umm3601.todo;
 
 import com.google.gson.Gson;
-import umm3601.user.User;
 
 import java.io.FileReader;
 import java.io.IOException;

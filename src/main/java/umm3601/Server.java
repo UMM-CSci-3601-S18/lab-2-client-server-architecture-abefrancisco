@@ -3,9 +3,9 @@ package umm3601;
 import spark.Filter;
 import spark.Request;
 import spark.Response;
-import umm3601.todo.Todo;
 import umm3601.user.Database;
 import umm3601.user.UserController;
+import umm3601.todo.TodoController;
 
 import java.io.IOException;
 
@@ -15,6 +15,7 @@ import static spark.debug.DebugScreen.*;
 public class Server {
 
   public static final String USER_DATA_FILE = "src/main/data/users.json";
+  public static final String Todo_DATA_FILE = "src/main/data/users.json";
   private static umm3601.user.Database userDatabase;
   private static umm3601.todo.Database todoDatabase;
 
@@ -22,6 +23,7 @@ public class Server {
 
     // Initialize dependencies
     UserController userController = buildUserController();
+    TodoController todoController = buildTodoController();
 
     // Configure Spark
     port(4567);
@@ -72,7 +74,7 @@ public class Server {
 
     try {
       userDatabase = new Database(USER_DATA_FILE);
-      userController = new UserController(umm3601.user.Database);
+      userController = new UserController(userDatabase);
     } catch (IOException e) {
       System.err.println("The server failed to load the user data; shutting down.");
       e.printStackTrace(System.err);
@@ -86,11 +88,11 @@ public class Server {
   }
 
   private static TodoController buildTodoController() {
-    UserController todoController = null;
+    TodoController todoController = null;
 
     try {
-      todoDatabase = new Database(Todo_DATA_FILE);
-      todoController = new UserController(umm3601.todo.Database);
+      todoDatabase = new umm3601.todo.Database(Todo_DATA_FILE);
+      todoController = new TodoController(todoDatabase);
     } catch (IOException e) {
       System.err.println("The server failed to load the user data; shutting down.");
       e.printStackTrace(System.err);
