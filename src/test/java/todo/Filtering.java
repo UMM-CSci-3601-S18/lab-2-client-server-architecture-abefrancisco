@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import static junit.framework.TestCase.assertEquals;
 
-public class FilterByCategory {
+public class Filtering {
 
   @Test
   public void filterByCategory() throws IOException {
