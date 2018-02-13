@@ -47,21 +47,50 @@ public class Database {
     Todo[] filteredTodos = allTodos;
       //String message = "User with ID " + id + " wasn't found.";
 
+    // by category
+    if (queryParams.containsKey("category")) {
+      String targetCategory = queryParams.get("category")[0];
+      filteredTodos = filterTodosByCategory(filteredTodos, targetCategory);
+    }
+
+    // by content
+    if (queryParams.containsKey("content")) {
+      String targetContent = queryParams.get("content")[0];
+      filteredTodos = filterTodosByContent(filteredTodos, targetContent);
+    }
+
+    // by owner
+    if (queryParams.containsKey("owner")) {
+      String targetOwner = queryParams.get("owner")[0];
+      filteredTodos = filterTodosByOwner(filteredTodos, targetOwner);
+    }
+
     // by status
     if (queryParams.containsKey("status")) {
       Boolean targetStatus = Boolean.parseBoolean(queryParams.get("status")[0]);
       filteredTodos = filterTodosByStatus(filteredTodos, targetStatus);
     }
-    // Process other query parameters here...
-
-
 
     return filteredTodos;
   }
 
-  // get all todos by 'status'
+  // filtery by category
+  public Todo[] filterTodosByCategory(Todo[] todos, String targetCategory) {
+    return Arrays.stream(todos).filter(x -> x.category.equals(targetCategory)).toArray(Todo[]::new);
+  }
+
+  // filter by content
+  public Todo[] filterTodosByContent(Todo[] todos, String targetContent) {
+    return Arrays.stream(todos).filter(x -> x.body.contains(targetContent)).toArray(Todo[]::new);
+  }
+
+  // filter by owner
+  public Todo[] filterTodosByOwner(Todo[] todos, String targetOwner) {
+    return Arrays.stream(todos).filter(x -> x.owner.equals(targetOwner)).toArray(Todo[]::new);
+  }
+
+  // get all todos by 'status' and filter
   public Todo[] filterTodosByStatus(Todo[] todos, boolean targetStatus) {
     return Arrays.stream(todos).filter(x -> x.status == targetStatus).toArray(Todo[]::new);
   }
-
 }
